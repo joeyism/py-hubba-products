@@ -45,4 +45,4 @@ actions["context_product"] = actions["context_page_path"].str.split("/").str[-1]
 #prods["name"] == actions["context_product"]
 # mastrad-paris-pro-gourmet-hotcold-whipper-sst-0.5l
 
-df = actions.merge(buyers, left_on="user_id", right_on="owner").merge(prods, left_on="context_product", right_on="name")
+df = actions.merge(buyers, left_on="user_id", right_on="owner", how="left").merge(prods, left_on="context_product", right_on="name", how="left")
