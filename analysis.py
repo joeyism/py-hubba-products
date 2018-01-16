@@ -21,13 +21,21 @@ for unused_col in ["deleteddate", "surl"]:
     del prods[unused_col]
 
 # Split categories by __, and store
-for i in range(3):
-    prods["category"+str(i)] = prods["category"].str.split("__").str[i]
+#for i in range(3):
+#    prods["category"+str(i)] = prods["category"].str.split("__").str[i]
 
 
-prods2 = prods.groupby(["id1"]).agg({"category": lambda x: " ".join([y if isinstance(y, str) else str(y) for y in x ])}).reset_index()
+prods = prods.drop_duplicates()
+prods2 = prods.groupby(["name"]).agg({
+    "category": {
+        "joined_category": lambda x: " ".join([y if isinstance(y, str) else str(y) for y in x ]),
+        "count": lambda x: len(x)
+    },
+    "id1": {"no_of_rows": "count"}
+}).reset_index()
+prods2.columns = ["name"] + list(prods2.columns.droplevel(0)[1:])
 
-prods3 = prods.groupby("id1").count()
+del prods["category"]
 
 ### Actions
 for col in actions.columns:
@@ -38,6 +46,21 @@ for col in actions.columns:
             nan_1_and_0(actions[col], top)
 
 actions["context_product"] = actions["context_page_path"].str.split("/").str[-1]
+actions.rename(columns={"id": "actions_id"}, inplace = True)
+
+actions2 = actions[["user_id", "context_product", "action"]].groupby(["user_id", "context_product"]).count().reset_index()
+
+### Buyers
+buyers2 = buyers.groupby(["owner"]).nunique()
+del buyers2["owner"]
+buyers2 = buyers2.reset_index()
+
+buyers3 = buyers.groupby(["owner"]).count().reset_index()
+
+buyers2 = buyers3[["owner", "_id"]].merge(buyers2[["owner", "description", "value"]], on="owner")
+del buyers3
+buyers2.columns = ["owner", "no_of_rows", "no_of_products", "no_of_categories"]
+
 
 #actions["user_id"] == buyers["owner"]
 # 5a4978af403d1a5afc74484a
@@ -45,4 +68,12 @@ actions["context_product"] = actions["context_page_path"].str.split("/").str[-1]
 #prods["name"] == actions["context_product"]
 # mastrad-paris-pro-gourmet-hotcold-whipper-sst-0.5l
 
-df = actions.merge(buyers, left_on="user_id", right_on="owner", how="left").merge(prods, left_on="context_product", right_on="name", how="left")
+df = actions2.merge(buyers2, left_on="user_id", right_on="owner", how="left").merge(prods2, left_on="context_product", right_on="name", how="left")
+
+# for missing in prods2, scrape site
+for name in df.loc[df["name"].isnull()]["context_product"].unique():
+    actions_row = actions.loc[actions["context_product"] == name].iloc[0]
+    url = actions_row["context_page_url"]
+    #TODO: scrape and add to prods
+
+
