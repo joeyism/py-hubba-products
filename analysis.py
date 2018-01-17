@@ -71,9 +71,15 @@ buyers2.columns = ["owner", "no_of_rows", "no_of_products", "no_of_categories"]
 df = actions2.merge(buyers2, left_on="user_id", right_on="owner", how="left").merge(prods2, left_on="context_product", right_on="name", how="left")
 
 # for missing in prods2, scrape site
-for name in df.loc[df["name"].isnull()]["context_product"].unique():
-    actions_row = actions.loc[actions["context_product"] == name].iloc[0]
-    url = actions_row["context_page_url"]
-    #TODO: scrape and add to prods
+#for name in df.loc[df["name"].isnull()]["context_product"].unique():
+#    actions_row = actions.loc[actions["context_product"] == name].iloc[0]
+#    url = actions_row["context_page_url"]
+#    #TODO: scrape and add to prods
 
 
+
+def action_timeline(user_id, product):
+    return actions.loc[(actions["user_id"] == user_id) & (actions["context_product"] == product), ["user_id", "context_product", "action"]]
+
+actions_per_user = actions2[["user_id", "action"]].groupby("user_id").sum().reset_index() #55.335 actions
+actions_per_product = actions2[["context_product", "action"]].groupby("context_product").sum().reset_index()
