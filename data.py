@@ -78,9 +78,9 @@ buyers3 = buyers.groupby(["owner"]).agg({
 }).reset_index()
 buyers3.columns = ["owner"] + list(buyers3.columns.droplevel(0)[1:])
 
-buyers2 = buyers3[["owner", "_id", "description"]].merge(buyers2[["owner", "description", "value", "name"]], on="owner")
+buyers2 = buyers3[["owner", "_id", "description", "name"]].merge(buyers2[["owner", "description", "value"]], on="owner")
 del buyers3
-buyers2.columns = ["owner", "no_of_rows", "description", "no_of_products", "no_of_categories", "name"]
+buyers2.columns = ["owner", "no_of_rows", "description", "name", "no_of_products", "no_of_categories"]
 
 
 
