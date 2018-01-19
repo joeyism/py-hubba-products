@@ -1,5 +1,6 @@
 import json
 import os
+from collections import defaultdict
 filedir = os.path.dirname(os.path.abspath(__file__))
 
 def generate():

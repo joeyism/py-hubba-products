@@ -70,7 +70,11 @@ actions2.columns = ["user_id", "context_product"] + list(actions2.columns.drople
 buyers2 = buyers.groupby(["owner"]).nunique()
 del buyers2["owner"]
 buyers2 = buyers2.reset_index()
+
+product_name_nulls = prods2.loc[prods2["picture"].isnull(), "name"].values
+
 prods2 = prods2[prods2["picture"].notnull()]
+
 
 
 actions2 = actions2.merge(prods2, left_on="context_product", right_on="name")[actions2.columns]
@@ -112,3 +116,6 @@ def get_actions():
 
 def get_buyers():
     return buyers2
+
+def get_missing_products():
+    return product_name_nulls
