@@ -108,5 +108,7 @@ def get_actions():
 def get_buyers():
     return buyers2
 
-
+def get_recommendations():
+    import json
+    return json.load(open(filedir + "/recommendations.json"))
 
