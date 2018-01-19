@@ -46,7 +46,9 @@ def scrape_missing_products():
 
     result = []
     missing_products = data.get_missing_products()
-    for missing_prod in missing_products:
+    N = len(missing_products)
+    for i, missing_prod in enumerate(missing_products):
+        print("\r{}/{}\t".format(i+1, N), end="")
         prod = scrape(driver, missing_prod)
         if prod:
             result.append(prod.out())
