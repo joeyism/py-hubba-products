@@ -70,6 +70,11 @@ actions2.columns = ["user_id", "context_product"] + list(actions2.columns.drople
 buyers2 = buyers.groupby(["owner"]).nunique()
 del buyers2["owner"]
 buyers2 = buyers2.reset_index()
+prods2 = prods2[prods2["picture"].notnull()]
+
+
+actions2 = actions2.merge(prods2, left_on="context_product", right_on="name")[actions2.columns]
+
 
 buyers3 = buyers.groupby(["owner"]).agg({
     "_id": {"_id": "count"},
@@ -107,8 +112,3 @@ def get_actions():
 
 def get_buyers():
     return buyers2
-
-def get_recommendations():
-    import json
-    return json.load(open(filedir + "/recommendations.json"))
-
