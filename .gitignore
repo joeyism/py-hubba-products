@@ -1,3 +1,5 @@
-*.csv
+buyers.csv
+actions.csv
+prods.csv
 *.swp
 __pycache__
