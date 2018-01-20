@@ -38,11 +38,16 @@ def scrape(driver, name):
     product.picture = driver.find_element_by_class_name("hubba-ui-full-content-slider--active").find_element_by_tag_name("img").get_attribute("ng-src")
     return product
 
-def scrape_missing_products():
+def scrape_missing_products(headless = False):
     import data
+    chrome_options = webdriver.ChromeOptions()
+    
+    if headless:
+        chrome_options.add_argument('headless')
+        chrome_options.add_argument('no-sandbox')
 
     filedir = os.path.dirname(os.path.abspath(__file__))
-    driver = webdriver.Chrome(filedir + "/chromedriver")
+    driver = webdriver.Chrome(filedir + "/chromedriver", chrome_options = chrome_options)
 
     result = []
     missing_products = data.get_missing_products()
@@ -59,6 +64,13 @@ def scrape_missing_products():
     return df
 
 if __name__ == "__main__":
-    output_filename = sys.argv[1]
-    df = scrape_missing_products()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input", help="input file", type=str)
+    parser.add_argument("--headless", help="whether to use headles", action="store_true")
+    args = parser.parse_args()
+    headless = args.headless
+    output_filename = args.input
+
+    df = scrape_missing_products(headless=headless)
     df.to_csv(output_filename)

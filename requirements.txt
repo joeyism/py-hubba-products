@@ -1,3 +1,6 @@
-pandas
 numpy
+pandas
 scikit-surprise
+selenium
+requests
+lxml
