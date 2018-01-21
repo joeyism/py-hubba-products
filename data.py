@@ -7,6 +7,8 @@ filedir = os.path.dirname(os.path.abspath(__file__))
 prods = pd.read_csv(filedir + "/prods.csv")
 actions = pd.read_csv(filedir + "/actions.csv")
 buyers = pd.read_csv(filedir + "/buyers.csv")
+prods_scraped = pd.read_csv(filedir + "/prods_scraped.csv")
+
 
 
 def nan_1_and_0(df, only_value):
@@ -53,6 +55,7 @@ prods2 = prods.groupby(["name"]).agg({
     "product_name": {"product_name": "first"},
 }).reset_index()
 prods2.columns = ["name"] + list(prods2.columns.droplevel(0)[1:])
+prods2 = pd.concat([prods2, prods_scraped]).reset_index(drop=True)
 
 del prods["category"]
 
